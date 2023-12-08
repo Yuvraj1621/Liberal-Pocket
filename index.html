@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liberal Pocket</title>
+    <style>
+        body {
+            font-family: Domine;
+            margin: 0;
+            padding: 0;
+            background-color: #91a16a;
+        }
+
+        header {
+            background-color: #F0F2CA;
+            color: #fff;
+            padding: 5px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        
+        header img {
+            max-width: 320px;
+            margin-right: 10px;
+        }
+
+        main {
+            display: flex;
+            justify-content: space-around;
+            align-items: stretch;
+            margin: 20px;
+        }
+
+        .calculator, .container {
+            background-color: #F0F2CA;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .container {
+            flex: 1;
+            text-align: center;
+            margin: 0 10px;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049
+        }       
+             
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .total {
+            font-weight: bold;
+        }
+        #aboutus {
+            background-color: #333 ;
+            color: #fff;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            max-width: 40px;
+            text-decoration: none;
+        }   
+        #aboutus:hover {
+            background-color: #45a049
+        }
+         footer {
+        background-color: #333;
+        color: #fff;
+        padding: 15px;
+        text-align: center;
+        position: fixed;
+        bottom: 0;
+        right: 0; 
+        width: 100%;
+    }
+        iframe {
+            width: 20%;
+            height: 100vh; 
+            position: fixed;
+            left: 0;
+            top: 0;
+            border: none;
+        }
+       .sidebar {
+            flex: 0 0 20%;
+            background-color: transparent;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            overflow: hidden;
+        }
+            
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1></h1>
+        <img src="Assets/sui.png">
+    </header>
+
+    <main>
+           <div class="sidebar">
+            <!-- Sidebar content goes here -->
+        </div>
+        <iframe src="https://budgetappbot.netlify.app/" frameborder="0" allow="autoplay; encrypted-media"
+            allowfullscreen></iframe>
+       
+        <div class="calculator">
+            <h1>Financial Calculator</h1>
+            <form>
+                <label for="income">Income:</label>
+                <input type="number" id="income" placeholder="Enter income" required><br>
+
+                <label for="expenses">Expenses:</label>
+                <input type="number" id="expenses" placeholder="Enter expenses" required><br>
+
+                <button type="button" onclick="calculateFinances()">Calculate</button>
+            </form>
+
+            <div class="result" id="results" style="display: none;">
+                <h2>Results:</h2>
+                <p id="balance"></p>
+                <p id="creditScore"></p>
+                <p id="spendingStatus"></p>
+                <p id="challenge"></p>
+                <p id="creditChange"></p>
+            </div>
+        </div>
+
+        <div class="container" id="incomeContainer">
+            <h2>Income</h2>
+            <input type="text" id="incomecategory" placeholder="Category">
+            <input type="number" id="incomeAmount" placeholder="Amount">
+            <button onclick="addIncome()">Add Income</button>
+            <ul id="incomeList"></ul>
+        </div>
+
+        <div class="container" id="expenseContainer">
+            <h2>Expenses</h2>
+            <input type="text" id="expensecategory" placeholder="Category">
+            <input type="number" id="expenseAmount" placeholder="Amount">
+            <button onclick="addExpense()">Add Expense</button>
+            <ul id="expenseList"></ul>
+        </div>
+
+        <div class="container" id="summaryContainer">
+            <h2>Summary</h2>
+            <ul>
+                <li>Income: <span id="totalIncome">0</span></li>
+                <li>Expenses: <span id="totalExpense">0</span></li>
+                <li class="total">Total: <span id="total">0</span></li>
+            </ul>
+        </div>
+
+        <div class="container" id="financialScoreContainer">
+            <h2>Financial Score</h2>
+            <button onclick="calculateAndDisplayScore()">Calculate Score</button>
+            <p id="score"></p>
+            <p id="spendingData"></p>
+        </div>
+    <footer>
+        <a href="aboutus.html" class="button" id="aboutus">About Us</a>
+    </footer>
+    </main>
+
+    <script>
+        function calculateFinances() {
+            let income = parseFloat(document.getElementById('income').value);
+            let expenses = parseFloat(document.getElementById('expenses').value);
+
+            let spendingPercentage = (expenses / income) * 100;
+            let balance = income - expenses;
+            let creditScore = 0;
+            let spendingStatus = '';
+            let challenge = '';
+            let creditChange = '';
+
+            if (balance > 0) {
+                creditScore += 50;
+            } else if (balance < 0) {
+                creditScore -= 30;
+            }
+
+            document.getElementById('balance').innerText = `Balance: ₹ ${balance.toFixed(2)}`;
+            document.getElementById('creditScore').innerText = `Credit Score: ${creditScore}`;
+
+            if (spendingPercentage <= 10) {
+                spendingStatus = 'You spent reasonably.';
+                if (spendingPercentage < 10 && spendingPercentage >= 0) {
+                    creditChange = `Credits gained:  ${(0.02 * balance).toFixed(2)}`;
+                }
+            } else if (spendingPercentage <= 25) {
+                spendingStatus = 'You overspent.';
+                if (spendingPercentage < 25 && spendingPercentage > 10) {
+                    creditChange = `Credits gained:  ${(0.01 * balance).toFixed(2)}`;
+                }
+                challenge = 'Accept challenge for a week to spend less.';
+            } else if (spendingPercentage > 50) {
+                spendingStatus = 'Your account is blocked.';
+                challenge = 'Accept challenge for next 28 days and spend less.';
+                creditChange = `Credits deducted: 15`;
+                creditScore -= 15;
+                
+            }
+
+            document.getElementById('spendingStatus').innerText = spendingStatus;
+            document.getElementById('challenge').innerText = challenge;
+            document.getElementById('creditChange').innerText = creditChange;
+
+        
+            document.getElementById('results').style.display = 'block';
+        }
+
+          function addIncome() {
+        const description = document.getElementById('incomecategory').value;
+            const amount = parseFloat(document.getElementById('incomeAmount').value);
+            const incomeList = document.getElementById('incomeList');
+
+            if (description && !isNaN(amount)) {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `${description}: ₹${amount.toFixed(2)}`;
+                incomeList.appendChild(listItem);
+
+                updateTotalIncome(amount);
+                updateTotal();
+                calculateAndDisplayScore();
+            }
+        }
+
+        function addExpense() {
+        const description = document.getElementById('expensecategory').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const expenseList = document.getElementById('expenseList');
+
+            if (description && !isNaN(amount)) {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `${description}: ₹${amount.toFixed(2)}`;
+                expenseList.appendChild(listItem);
+
+                updateTotalExpense(amount);
+                updateTotal();
+                calculateAndDisplayScore(); 
+            }
+        }
+
+        function updateTotalIncome(amount) { 
+        const totalIncomeElement = document.getElementById('totalIncome');
+            const currentTotalIncome = parseFloat(totalIncomeElement.innerText);
+            totalIncomeElement.innerText =  (currentTotalIncome + amount).toFixed(2);
+        }
+
+        function updateTotalExpense(amount) {
+        const totalExpenseElement = document.getElementById('totalExpense');
+            const currentTotalExpense = parseFloat(totalExpenseElement.innerText);
+            totalExpenseElement.innerText =  (currentTotalExpense + amount).toFixed(2);
+        }
+
+        function updateTotal() {
+        const totalIncome = parseFloat(document.getElementById('totalIncome').innerText);
+            const totalExpense = parseFloat(document.getElementById('totalExpense').innerText);
+            const totalElement = document.getElementById('total');
+            totalElement.innerText =  (totalIncome - totalExpense).toFixed(2);
+        }
+
+        function calculateScore(averageSpent, currentSpent) {
+            const percentage = (currentSpent / averageSpent) * 100;
+
+            if (percentage <= 40) {
+                return { score: "Good", color: '#4CAF50' };
+            } else if (percentage > 40 && percentage <= 60) {
+                return { score: "Moderate", color: '#FFC107' };
+            } else {
+                return { score: "Bad", color: '#FF5733' };
+            }
+        }
+
+        function calculateAndDisplayScore() {
+        const totalBalance = parseFloat(document.getElementById('total').innerText);
+            const averageMonthlySpent = parseFloat(document.getElementById('totalIncome').innerText);
+            const currentSpent = parseFloat(document.getElementById('totalExpense').innerText);
+
+            const result = calculateScore(averageMonthlySpent, currentSpent);
+
+            document.getElementById('score').innerText = "Financial Score: " + result.score;
+            document.getElementById('spendingData').innerText = "Spending Data: " + currentSpent + " out of " + totalBalance;
+}
+    </script>
+
+</body>
+
+</html>
+
+
+
+
+
+    
+  
